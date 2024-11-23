@@ -176,6 +176,7 @@ try:
     st.markdown('priceToBook : ' + str(data.info['priceToBook']))
     st.markdown('debtToEquity (%) : ' + str(data.info['debtToEquity']))
     st.markdown('currentRatio : ' + str(data.info['currentRatio']))
+    st.markdown('totalCashPerShare : ' + str(data.info['totalCashPerShare']))
     st.markdown('pegRatio : ' + str(data.info['pegRatio']))
     
 except:
