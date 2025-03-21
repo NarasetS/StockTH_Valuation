@@ -51,7 +51,7 @@ input_year_sustain = int(st.sidebar.number_input(
 ))
 
 input_growthrate = st.sidebar.number_input(
-    "Expected Growth Rate for FCF : ", value=0.1 , placeholder= "Input.."
+    "Expected Growth Rate for FCF : ", value=0.07 , placeholder= "Input.."
 )
 
 input_growth_to_sustain_ratio = st.sidebar.number_input(
@@ -63,7 +63,7 @@ input_terminalgrowthrate = st.sidebar.number_input(
 )
 
 input_discountrate = st.sidebar.number_input(
-    "Discount Rate : ", value=0.10 , placeholder= "Input.."
+    "Discount Rate : ", value=0.06 , placeholder= "Input.."
 )
 
 ############################ Side Bar ################################################################
@@ -169,19 +169,25 @@ st.markdown('margin of safety (%) : ' + str(
     np.round((data.info['currentPrice'] - iv)*100/data.info['currentPrice'],2)
 ))
 
-try:
-    st.markdown('profitMargins : ' + str(data.info['profitMargins']))
-    st.markdown('returnOnEquity : ' + str(data.info['returnOnEquity']))
-    st.markdown('trailingPE : ' + str(data.info['trailingPE']))
-    st.markdown('priceToBook : ' + str(data.info['priceToBook']))
-    st.markdown('debtToEquity (%) : ' + str(data.info['debtToEquity']))
-    st.markdown('currentRatio : ' + str(data.info['currentRatio']))
-    st.markdown('totalCashPerShare : ' + str(data.info['totalCashPerShare']))
-    st.markdown('pegRatio : ' + str(data.info['pegRatio']))
-    
-except:
-    st.markdown('Theres error loading indicative ratios')
+statisticsindicators_list = [
+    'industry',
+    'sector',
+    'enterpriseValue',
+    'totalCashPerShare',
+    'profitMargins',
+    'priceToBook',
+    'debtToEquity',
+    'returnOnEquity',
+    'currentRatio',
+    'trailingEps',
+    'dividendRate'
+    ]
 
+for i in statisticsindicators_list:
+    try:
+        st.markdown('{} : '.format(i) + str(data.info[i]))
+    except:
+        st.markdown('{} : '.format(i) + 'NaN')
 
 st.header('Reverse DCF Curve (Expected of FCF vs Discount Rate) based on current price')
 st.markdown('To indicate expected growth rate based on particular discount rate which makes intrinsic value calculated from DCF equal to current price..')
@@ -203,33 +209,3 @@ df['growthrate'] = growthrate
 df.reset_index(inplace=True)
 df = df.rename(columns={'index':'discountrate'})
 st.scatter_chart(df, x = 'discountrate', y = 'growthrate')
-## Perform Reverse DCF ##
-
-## test ####
-# root = newton_raphson_method(           
-#             input_shares,
-#             input_totalnoncurrentliabilities,
-#             input_averagefreecashflow,
-#             input_year_growth,
-#             input_year_sustain,
-#             input_growth_to_sustain_ratio,
-#             input_discountrate,
-#             input_terminalgrowthrate,
-#             currentprice)
-# st.markdown(root)
-# diff = intrinsic_value_diff_currentprice(
-#         input_shares,
-#         input_totalnoncurrentliabilities,
-#         input_averagefreecashflow,
-#         input_year_growth,
-#         input_year_sustain,
-#         input_growth_to_sustain_ratio,
-#         input_discountrate,
-#         input_terminalgrowthrate,
-#         currentprice,
-#         root
-#         ) * 100
-# st.markdown(diff)
-## test ####
-
-#### Main area #############################################################################################0
