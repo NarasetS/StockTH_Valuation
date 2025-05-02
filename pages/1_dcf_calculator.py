@@ -150,7 +150,7 @@ def newton_raphson_method(
 
 
 #### Main area #############################################################################################
-st.markdown('To perform discounted cash flow to find intrinsic value for : ' + ticker)
+st.markdown('To perform discounted cash flow to find intrinsic value for >>  : ' + ticker)
 iv = np.round(intrinsic_value(
         input_shares,
         input_totalnoncurrentliabilities,
