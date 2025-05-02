@@ -80,4 +80,4 @@ urllib3==2.2.2
 watchdog==4.0.2
 wcwidth==0.2.13
 webencodings==0.5.1
-yfinance==0.2.55
+yfinance==0.2.54
