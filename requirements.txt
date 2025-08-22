@@ -40,12 +40,9 @@ protobuf==6.32.0
 psutil==6.0.0
 pure_eval==0.2.3
 pycparser==2.22
-Pygments==2.18.0
 pyparsing==3.1.4
 python-dateutil==2.9.0.post0
 pytz==2024.1
-pywin32==306
-pyzmq==26.2.0
 requests==2.32.3
 six==1.16.0
 soupsieve==2.6
