@@ -439,21 +439,33 @@ with colB:
         df_curve = pd.DataFrame({"Discount rate": dr_grid, "Implied growth (gr)": implied})
 
         st.subheader("Implied growth vs discount rate (Reverse DCF)")
-        chart = (
-            alt.Chart(df_curve)
-            .mark_line()
-            .encode(
-                x=alt.X("Discount rate:Q", title="Discount rate (dr)", axis=alt.Axis(format=".0%")),
-                y=alt.Y("Implied growth (gr):Q", title="Implied FCF growth rate (gr)", axis=alt.Axis(format=".0%")),
-                tooltip=[
-                    alt.Tooltip("Discount rate:Q", format=".2%"),
-                    alt.Tooltip("Implied growth (gr):Q", format=".2%")
-                ],
+        valid_curve = df_curve.dropna(subset=["Implied growth (gr)"])
+        if valid_curve.empty:
+            st.warning(
+                "Unable to compute a valid reverse DCF curve. Please adjust the inputs "
+                "or use a different starting discount rate."
             )
-            .properties(height=380)
-            .interactive()
-        )
-        st.altair_chart(chart, use_container_width=True)
+        else:
+            if len(valid_curve) < len(df_curve):
+                st.info(
+                    f"{len(df_curve) - len(valid_curve)} of {len(df_curve)} discount rate points "
+                    "did not converge and were omitted from the plot."
+                )
+            chart = (
+                alt.Chart(valid_curve)
+                .mark_line(point=True)
+                .encode(
+                    x=alt.X("Discount rate:Q", title="Discount rate (dr)", axis=alt.Axis(format=".0%")),
+                    y=alt.Y("Implied growth (gr):Q", title="Implied FCF growth rate (gr)", axis=alt.Axis(format=".0%")),
+                    tooltip=[
+                        alt.Tooltip("Discount rate:Q", format=".2%"),
+                        alt.Tooltip("Implied growth (gr):Q", format=".2%")
+                    ],
+                )
+                .properties(height=380)
+                .interactive()
+            )
+            st.altair_chart(chart, use_container_width=True)
 
         # Sensitivity table (optional)
         if enable_sensitivity:
