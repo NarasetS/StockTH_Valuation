@@ -1,5 +1,6 @@
 import streamlit as st
 import yfinance as yf
+from yfinance.base import YFRateLimitError
 import pandas as pd
 import numpy as np
 from typing import Optional, Tuple, Dict, Any
@@ -17,12 +18,23 @@ st.caption(
 # Cached Yahoo pulls (serializable)
 # -----------------------------
 @st.cache_data(show_spinner=False, ttl=60 * 30)
-def load_yf_data(ticker: str):
-    t = yf.Ticker(ticker)
-    info = t.info or {}
-    bs = t.balancesheet
-    cf = t.cash_flow
-    return info, bs, cf
+def load_yf_data(ticker: str) -> Tuple[Dict[str, Any], pd.DataFrame, pd.DataFrame, Optional[str]]:
+    try:
+        t = yf.Ticker(ticker)
+        info = t.info or {}
+        bs = t.balancesheet
+        cf = t.cash_flow
+        return info, bs, cf, None
+    except YFRateLimitError:
+        return {}, pd.DataFrame(), pd.DataFrame(), (
+            "Yahoo Finance rate limit reached. Please wait a few minutes and retry, "
+            "or use a different ticker."
+        )
+    except Exception as err:
+        return {}, pd.DataFrame(), pd.DataFrame(), (
+            f"Unable to load Yahoo Finance data: {err}. "
+            "Check the ticker and your connection."
+        )
 
 # -----------------------------
 # Helpers
@@ -264,7 +276,9 @@ with st.sidebar:
     st.header("Inputs")
 
     ticker = st.text_input("Ticker (Yahoo Finance)", value="mc.bk").strip()
-    info, balancesheet, cashflow = load_yf_data(ticker)
+    info, balancesheet, cashflow, yf_error = load_yf_data(ticker)
+    if yf_error:
+        st.warning(yf_error)
 
     sector = safe_get(info, "sector", "Unknown")
     industry = safe_get(info, "industry", "Unknown")
